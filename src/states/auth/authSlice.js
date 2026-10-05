@@ -1,6 +1,8 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { login, register } from '../../api/authApi';
-import { putAccessToken, removeAccessToken } from '../../helpers/apiHelper';
+
+// 1. IMPORT getAccessToken DITAMBAHKAN DI SINI
+import { getAccessToken, putAccessToken, removeAccessToken } from '../../helpers/apiHelper';
 import { showSuccessDialog, showErrorDialog } from '../../helpers/toolsHelper';
 
 // --- ASYNC THUNKS ---
@@ -26,8 +28,13 @@ export const asyncLoginUser = createAsyncThunk(
   async ({ email, password }, { rejectWithValue }) => {
     try {
       const response = await login({ email, password });
-      // Asumsi API mengembalikan token di dalam response.data.token
-      const token = response.data.token; 
+      // Ekstraksi token aman (mendukung response.data.token maupun response.token)
+      const token = response.data?.token || response.token; 
+      
+      if (!token) {
+        throw new Error('Token tidak ditemukan dalam respon server.');
+      }
+
       putAccessToken(token); // Simpan token ke localStorage
       showSuccessDialog('Login berhasil!');
       return token;
@@ -43,8 +50,8 @@ export const asyncLoginUser = createAsyncThunk(
 const authSlice = createSlice({
   name: 'auth',
   initialState: {
-    token: null,
-    // State loading untuk penanganan UI
+    // 2. TOKEN LANGSUNG DIBACA DARI LOCALSTORAGE SAAT REFRESH
+    token: getAccessToken() || null,
     isAuthLogin: false,  
     isAuthRegister: false,
   },
@@ -55,7 +62,7 @@ const authSlice = createSlice({
       removeAccessToken();
       showSuccessDialog('Anda telah berhasil logout.');
     },
-    // Menyimpan token jika user sudah login sebelumnya (saat refresh halaman)
+    // Menyimpan token jika dibutuhkan secara manual
     setAuthToken: (state, action) => {
       state.token = action.payload;
     }
