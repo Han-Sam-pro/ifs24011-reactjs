@@ -21,12 +21,14 @@ export const removeAccessToken = () => {
  * @returns {Promise<any>} Response dari API dalam format JSON
  */
 export const apiFetch = async (endpoint, options = {}) => {
-  // Destructuring opsi bawaan
   const { method = 'GET', body, params, headers = {}, ...customConfig } = options;
 
-  // 1. Atur URL dan Query Parameters
-  // DELCOM_BASEURL telah kita definisikan secara global di vite.config.js
-  let url = `${DELCOM_BASEURL}${endpoint}`;
+  // 1. Fallback aman: jika DELCOM_BASEURL tidak terbaca, gunakan URL API Delcom langsung
+  const baseUrl = (typeof DELCOM_BASEURL !== 'undefined' && DELCOM_BASEURL) 
+    ? DELCOM_BASEURL 
+    : 'https://open-api.delcom.org/api/v1';
+
+  let url = `${baseUrl}${endpoint}`;
   
   if (params) {
     const queryParams = new URLSearchParams(params).toString();
@@ -49,25 +51,34 @@ export const apiFetch = async (endpoint, options = {}) => {
     config.headers['Authorization'] = `Bearer ${token}`;
   }
 
-  // 4. Sertakan Body Request jika ada (kecuali untuk GET/HEAD)
+  // 4. Sertakan Body Request jika ada
   if (body) {
     config.body = JSON.stringify(body);
   }
 
-  // 5. Lakukan Request dan Tangani Response
+  // 5. Lakukan Request dan Tangani Respon dengan Aman
   try {
     const response = await fetch(url, config);
-    const data = await response.json();
+
+    // Cek apakah balasan server benar-benar berupa JSON
+    const contentType = response.headers.get('content-type');
+    let data;
+
+    if (contentType && contentType.includes('application/json')) {
+      data = await response.json();
+    } else {
+      // Jika server membalas HTML (seperti 404 / 500 / halaman index.html)
+      throw new Error(`Respon server bukan JSON (Status: ${response.status}). URL API: ${url}`);
+    }
 
     // Jika response status tidak ok (misal: 400, 401, 404, 500)
     if (!response.ok) {
-      // Melempar error agar bisa ditangkap di blok catch pada komponen/custom hooks
       throw new Error(data.message || 'Terjadi kesalahan saat menghubungi server');
     }
 
     return data;
   } catch (error) {
-    console.error(`[apiFetch Error] ${method} ${endpoint}:`, error.message);
+    console.error(`[apiFetch Error] ${method} ${url}:`, error.message);
     throw error;
   }
 };
