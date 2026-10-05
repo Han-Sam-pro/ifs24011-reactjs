@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import { FaPlus, FaSearch, FaBoxOpen, FaCheckCircle, FaExclamationCircle } from 'react-icons/fa';
 import { asyncReceiveLostFounds, asyncReceiveStats } from '../states/lostFoundSlice';
 import { formatDate } from '../../../helpers/toolsHelper';
-import AddModal from '../modals/addModal';
+import AddModal from '../modals/AddModal';
 
 const HomePage = () => {
   const dispatch = useDispatch();
