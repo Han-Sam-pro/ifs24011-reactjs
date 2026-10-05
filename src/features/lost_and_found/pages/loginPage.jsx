@@ -3,7 +3,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { FiMail, FiLock } from 'react-icons/fi';
 
-// Gunakan ../../../ untuk kembali ke folder src/
 import AuthLayout from '../../../layouts/authLayout';
 import useInput from '../../../hooks/useInput';
 import { asyncLoginUser } from '../../../states/auth/authSlice';
@@ -33,12 +32,16 @@ const LoginPage = () => {
 
       <form onSubmit={onSubmit} className="space-y-5">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+          <label htmlFor="login-email-input" className="block text-sm font-medium text-gray-700 mb-1">
+            Email
+          </label>
           <div className="relative">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
               <FiMail className="text-gray-400" />
             </div>
+            {/* ID DITAMBAHKAN DI SINI */}
             <input
+              id="login-email-input"
               type="email"
               value={email}
               onChange={handleEmailChange}
@@ -50,12 +53,16 @@ const LoginPage = () => {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
+          <label htmlFor="login-password-input" className="block text-sm font-medium text-gray-700 mb-1">
+            Password
+          </label>
           <div className="relative">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
               <FiLock className="text-gray-400" />
             </div>
+            {/* ID DITAMBAHKAN DI SINI */}
             <input
+              id="login-password-input"
               type="password"
               value={password}
               onChange={handlePasswordChange}
@@ -66,10 +73,12 @@ const LoginPage = () => {
           </div>
         </div>
 
+        {/* ID DITAMBAHKAN DI SINI */}
         <button
+          id="login-submit-button"
           type="submit"
           disabled={isAuthLogin}
-          className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg transition-colors disabled:bg-blue-400 flex justify-center items-center shadow-md"
+          className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg transition-colors disabled:bg-blue-400 flex justify-center items-center shadow-md cursor-pointer"
         >
           {isAuthLogin ? 'Memproses...' : 'Masuk'}
         </button>

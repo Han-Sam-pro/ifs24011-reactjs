@@ -46,12 +46,16 @@ const RegisterPage = () => {
 
       <form onSubmit={onSubmit} className="space-y-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Nama Lengkap</label>
+          <label htmlFor="register-name-input" className="block text-sm font-medium text-gray-700 mb-1">
+            Nama Lengkap
+          </label>
           <div className="relative">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
               <FiUser className="text-gray-400" />
             </div>
+            {/* ID NAMA DITAMBAHKAN */}
             <input
+              id="register-name-input"
               type="text"
               value={name}
               onChange={handleNameChange}
@@ -63,12 +67,16 @@ const RegisterPage = () => {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+          <label htmlFor="register-email-input" className="block text-sm font-medium text-gray-700 mb-1">
+            Email
+          </label>
           <div className="relative">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
               <FiMail className="text-gray-400" />
             </div>
+            {/* ID EMAIL DITAMBAHKAN */}
             <input
+              id="register-email-input"
               type="email"
               value={email}
               onChange={handleEmailChange}
@@ -80,12 +88,16 @@ const RegisterPage = () => {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
+          <label htmlFor="register-password-input" className="block text-sm font-medium text-gray-700 mb-1">
+            Password
+          </label>
           <div className="relative">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
               <FiLock className="text-gray-400" />
             </div>
+            {/* ID PASSWORD DITAMBAHKAN */}
             <input
+              id="register-password-input"
               type="password"
               value={password}
               onChange={handlePasswordChange}
@@ -97,12 +109,16 @@ const RegisterPage = () => {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Konfirmasi Password</label>
+          <label htmlFor="register-confirm-password-input" className="block text-sm font-medium text-gray-700 mb-1">
+            Konfirmasi Password
+          </label>
           <div className="relative">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
               <FiLock className="text-gray-400" />
             </div>
+            {/* ID KONFIRMASI PASSWORD DITAMBAHKAN */}
             <input
+              id="register-confirm-password-input"
               type="password"
               value={confirmPassword}
               onChange={handleConfirmPasswordChange}
@@ -113,10 +129,12 @@ const RegisterPage = () => {
           </div>
         </div>
 
+        {/* ID TOMBOL SUBMIT DITAMBAHKAN */}
         <button
+          id="register-submit-button"
           type="submit"
           disabled={isAuthRegister}
-          className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg transition-colors mt-2 disabled:bg-blue-400 flex justify-center items-center shadow-md"
+          className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg transition-colors mt-2 disabled:bg-blue-400 flex justify-center items-center shadow-md cursor-pointer"
         >
           {isAuthRegister ? 'Memproses...' : 'Daftar Sekarang'}
         </button>
