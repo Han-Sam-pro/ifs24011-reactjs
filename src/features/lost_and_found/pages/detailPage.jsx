@@ -13,7 +13,7 @@ import { formatDate, showConfirmDialog } from '../../../helpers/toolsHelper';
 import ChangeModal from '../modals/changeModal';
 import ChangeCoverModal from '../modals/changeCoverModal';
 
-const DetailPage = () => {
+const DetailPage = () => {  
   const { id } = useParams();
   const navigate = useNavigate();
   const dispatch = useDispatch();
