@@ -1,21 +1,9 @@
-import { useState } from 'react';
+import { useCallback, useState } from "react";
 
-/**
- * Custom hook reusable untuk mengelola two-way data binding
- * pada elemen formulir input.
- * 
- * @param {any} defaultValue - Nilai awal input
- * @returns {Array} [value, handleValueChange, setValue]
- */
-const useInput = (defaultValue = '') => {
-  const [value, setValue] = useState(defaultValue);
-
-  const handleValueChange = (event) => {
-    // Membaca nilai dari event target (input, textarea, atau select)
-    setValue(event.target.value);
-  };
-
-  return [value, handleValueChange, setValue];
-};
-
-export default useInput;
+// Two-way binding sederhana: pasang `value` + `onChange` pada elemen form.
+export default function useInput(initialValue = "") {
+  const [value, setValue] = useState(initialValue);
+  const onChange = useCallback((event) => setValue(event.target.value), []);
+  const reset = useCallback(() => setValue(initialValue), [initialValue]);
+  return { value, onChange, setValue, reset };
+}

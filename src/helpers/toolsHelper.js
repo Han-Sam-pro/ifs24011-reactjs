@@ -1,74 +1,71 @@
-import Swal from 'sweetalert2';
-
-/**
- * Menampilkan pesan sukses interaktif
- * @param {string} message - Pesan yang ingin ditampilkan
- */
-export const showSuccessDialog = (message) => {
-  return Swal.fire({
-    title: 'Berhasil!',
-    text: message,
-    icon: 'success',
-    confirmButtonColor: '#3b82f6', // blue-500
-    confirmButtonText: 'Tutup',
-    customClass: {
-      popup: 'font-sans'
-    }
-  });
+// SweetAlert2 dimuat secara lazy (hanya saat dialog pertama dibuka)
+// agar tidak membebani bundle awal -> menghilangkan "unused JavaScript".
+const fire = async (options) => {
+  const { default: Swal } = await import("sweetalert2");
+  return Swal.fire(options);
 };
 
-/**
- * Menampilkan pesan error interaktif
- * @param {string} message - Pesan error yang ingin ditampilkan
- */
-export const showErrorDialog = (message) => {
-  return Swal.fire({
-    title: 'Terjadi Kesalahan!',
-    text: message,
-    icon: 'error',
-    confirmButtonColor: '#ef4444', // red-500
-    confirmButtonText: 'Tutup',
-    customClass: {
-      popup: 'font-sans'
-    }
-  });
-};
+const ACCENT = "#3730a3";
 
-/**
- * Menampilkan dialog konfirmasi aksi
- * @param {string} title - Judul konfirmasi
- * @param {string} message - Pesan deskripsi
- */
-export const showConfirmDialog = (title = 'Apakah Anda yakin?', message = 'Tindakan ini tidak dapat dibatalkan.') => {
-  return Swal.fire({
-    title: title,
+export const showSuccessDialog = (message) =>
+  fire({ icon: "success", title: "Berhasil", text: message, confirmButtonColor: ACCENT });
+
+export const showErrorDialog = (message) =>
+  fire({ icon: "error", title: "Terjadi kesalahan", text: message, confirmButtonColor: ACCENT });
+
+export const showWarningDialog = (message) =>
+  fire({ icon: "warning", title: "Perhatian", text: message, confirmButtonColor: ACCENT });
+
+export const showConfirmDialog = async (message) => {
+  const result = await fire({
+    icon: "question",
+    title: "Lanjutkan?",
     text: message,
-    icon: 'warning',
     showCancelButton: true,
-    confirmButtonColor: '#3b82f6',
-    cancelButtonColor: '#ef4444',
-    confirmButtonText: 'Ya, Lanjutkan!',
-    cancelButtonText: 'Batal',
-    customClass: {
-      popup: 'font-sans'
-    }
+    confirmButtonText: "Ya, lanjutkan",
+    cancelButtonText: "Batal",
+    confirmButtonColor: "#be123c",
   });
+  return result.isConfirmed;
 };
 
-/**
- * Helper pemformatan tanggal/waktu ke format lokal Indonesia
- * @param {string|Date} dateString - String tanggal dari API (contoh: ISO 8601)
- * @returns {string} String tanggal yang diformat (contoh: 5 Oktober 2026, 11:28)
- */
-export const formatDate = (dateString) => {
-  if (!dateString) return '-';
-  
-  const date = new Date(dateString);
-  return date.toLocaleDateString('id-ID', {
-    day: 'numeric',
-    month: 'long',
-    year: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit'
+export const formatDate = (iso) => {
+  const date = new Date(iso);
+  if (!iso || Number.isNaN(date.getTime())) return "-";
+  return date.toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" });
+};
+
+// Path relatif dari API diubah menjadi URL absolut agar bisa dipakai <img>.
+export const resolveMediaUrl = (path) => {
+  if (!path) return null;
+  if (/^https?:\/\//.test(path)) return path;
+  return `${new URL(DELCOM_BASEURL).origin}/${path.replace(/^\//, "")}`;
+};
+
+export const isDone = (item) => Boolean(Number(item?.is_completed));
+
+export const reporterName = (item, users = []) =>
+  item.author?.name ??
+  item.user?.name ??
+  users.find((u) => u.id === item.user_id)?.name ??
+  "Pelapor anonim";
+
+export const initialsOf = (name) =>
+  `${name ?? ""}`
+    .split(" ")
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0].toUpperCase())
+    .join("") || "?";
+
+// Menormalkan respons statistik (array atau objek) menjadi [{label, value}].
+export const toSeries = (raw) => {
+  const source = raw?.stats ?? raw;
+  const rows = Array.isArray(source)
+    ? source
+    : Object.entries(source ?? {}).map(([label, value]) => ({ label, value }));
+  return rows.map((row, index) => {
+    const value = Number(typeof row.value === "number" ? row.value : (row.total ?? row.count ?? 0));
+    return { label: `${row.label ?? row.date ?? row.month ?? index + 1}`, value };
   });
 };

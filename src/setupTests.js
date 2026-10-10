@@ -1,8 +1,8 @@
-import '@testing-library/jest-dom';
-import { vi } from 'vitest';
+import "@testing-library/jest-dom/vitest";
+import { afterEach } from "vitest";
+import { cleanup } from "@testing-library/react";
 
-// Definisikan DELCOM_BASEURL jika dijalankan di environment test
-global.DELCOM_BASEURL = 'https://open-api.delcom.org/api/v1';
-
-// Mock scrollTo bawaan browser yang sering tidak ada di JSDOM
-window.scrollTo = vi.fn();
+afterEach(() => {
+  cleanup();
+  localStorage.clear();
+});
